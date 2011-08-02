@@ -1,0 +1,2 @@
+An experimental Java library that makes the OMA Push API available to Android projects that use a WebView (like PhoneGap projects). Based in general upon the approach taken for WebSockets in https://github.com/FreakDev/PhoneGap-Android-HTML5-WebSocket.
+planned enhancements include exposure of the Push API as an extension of EventSource, and avoiding the need to use the PhoneGap approach.
