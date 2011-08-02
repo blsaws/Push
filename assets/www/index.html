@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Push API test</title> 
+	<link rel="icon" type="image/png" href="http://bkaj.net/favicon.ico">
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1"/>
+	<style type="text/css">
+		body { font-family: sans-serif; }
+	</style>
+	<script type="text/javascript" src="pushapi.js"></script>
+</head>
+<body id="body" class='content'> 
+<h1>Push API Test</h1> 
+Push source: <input id='source' type='text' value='sms:'/><br/>
+(example: "sms:+12125551212")<br/>
+<span id='state'>PushSource is CLOSED</span><button id='control' onClick='openPushSource(source.value);'>Open it</button>
+<div id='log'></div>
+	<script type="text/javascript">
+	var pushsource;
+	var log = document.getElementById("log"); 
+	var control = document.getElementById("control");
+	var state = document.getElementById("state"); 
+	function openPushSource(source) {
+		try {
+			pushsource = new PushSource(source);
+			var str = log.innerHTML;
+			str +="PushSource opened: "+pushsource.url+"<br/>";
+			log.innerHTML = str;
+			pushsource.onmessage = function(event) {
+				var str = log.innerHTML;
+				str += "Message from PushSource ("+pushsource.url+"): "+event.data+"<br/>";
+				log.innerHTML = str;
+			};
+			state.innerHTML = 'PushSource is OPEN';
+			control.innerHTML = 'Close it';
+			control.setAttribute('onClick','closePushSource();');
+		}
+		catch (e) {
+			alert(e.message);
+			var str = log.innerHTML;
+			str += "Exception: "+e.message+"<br/>";
+			log.innerHTML = str;			
+		}
+	}
+	function closePushSource() {
+		pushsource.close();
+		var str = log.innerHTML;
+		str += "PushSource closed<br/>";
+		log.innerHTML = str;
+		state.innerHTML = 'PushSource is CLOSED';
+		control.setAttribute('onClick','openPushSource(source.value);');
+		control.innerHTML = 'Open it';
+	}
+	</script> 
+</body>
+</html>
