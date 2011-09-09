@@ -58,44 +58,45 @@ public class PushActivity extends Activity {
     public void onNewIntent(Intent intent) {
     	if (pushSource.mReadyState == PushSource.OPEN) {
         	Bundle bundle = intent.getExtras();
-        	String str = "";
+        	String str = intent.getAction()+":";
         	String data = "";
     		 if (bundle != null) { 
-    			 /**	To be added
-    			  *	if (intent.getAction().equals(Intents.WAP_PUSH_RECEIVED_ACTION)) {
-    			  * 	String mimeType = intent.getType();
-    			  * 	String headers = intent.getStringExtra("header");
-    			  * 	data = intent.getStringExtra("data");
-    			  * 	String contentTypeParameters = intent.getStringExtra("contentTypeParameters");
-    			  * 	pushSource.onmessage(headers+"\n"+data); 
-    			  *	} 
-    			  *	else {
-    			  *	}
-    			  */
-    			 int i = pushSource.mUrl.indexOf(':');
-    			 int l = pushSource.mUrl.length();
-    			 String match = "";
-    			 if (l > i+1) {
-    				 match = pushSource.mUrl.substring(i+1);
-    			 }
-    			 SmsMessage[ ] msgs = null; 
-    			 Object[ ] pdus = (Object[ ]) bundle.get("pdus"); 
-    			 msgs = new SmsMessage[pdus.length];
-    			 String source;
-    			 for (i=0; i<msgs.length; i++) { 
-    				 msgs[i] = SmsMessage.createFromPdu((byte[ ])pdus[i]);
-    				 source = msgs[i].getOriginatingAddress();
-    				 str += "Message from sms:" + source; 
-    				 str += " :";
-    				 data = msgs[i].getMessageBody().toString();
-    				 str += data;
-    				 // TODO: Need to deliver to all PushSource objects created (there could be more than one)
-    				 if (match.equals("") || match.equals(source)) {
-        					 pushSource.onmessage(data);
-        				 }
-    				 }
-    			 Toast.makeText(getBaseContext(), str, Toast.LENGTH_LONG).show();
-    		 }
+    			if (intent.getAction().equals("android.provider.Telephony.WAP_PUSH_RECEIVED")) {
+    			   String mimeType = intent.getType();
+    			   str = "mimeType:"+mimeType;
+    			   String headers = intent.getStringExtra("header");
+    			   data = intent.getStringExtra("data");
+    			   str += "/n" + data;
+    			   String contentTypeParameters = intent.getStringExtra("contentTypeParameters");
+    			   pushSource.onmessage(headers+"\n"+str); 
+    			   Toast.makeText(getBaseContext(), str, Toast.LENGTH_LONG).show();
+    			}
+    			else {
+    				int i = pushSource.mUrl.indexOf(':');
+    				int l = pushSource.mUrl.length();
+    				String match = "";
+    				if (l > i+1) {
+    					match = pushSource.mUrl.substring(i+1);
+    				}
+    				SmsMessage[ ] msgs = null; 
+    				Object[ ] pdus = (Object[ ]) bundle.get("pdus"); 
+    				msgs = new SmsMessage[pdus.length];
+    				String source;
+    				for (i=0; i<msgs.length; i++) { 
+    					msgs[i] = SmsMessage.createFromPdu((byte[ ])pdus[i]);
+    					source = msgs[i].getOriginatingAddress();
+    					str += "Message from sms:" + source; 
+    					str += " :";
+    					data = msgs[i].getMessageBody().toString();
+    					str += data;
+    					// TODO: Need to deliver to all PushSource objects created (there could be more than one)
+    					if (match.equals("") || match.equals(source)) {
+    						pushSource.onmessage(data);
+    					}
+    				}
+    				Toast.makeText(getBaseContext(), str, Toast.LENGTH_LONG).show();
+    			}
+    		}
     	}
     }
 }

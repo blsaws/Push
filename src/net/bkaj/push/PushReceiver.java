@@ -8,6 +8,7 @@ import android.content.Intent;
 	 @Override 
 	 public void onReceive(Context context, Intent intent) { 
 		 Intent i = new Intent();
+		 i.setAction(intent.getAction());
 		 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		 i.setClassName( "net.bkaj.push", "net.bkaj.push.PushActivity" );
 		 i.putExtras(intent.getExtras());

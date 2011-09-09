@@ -9,27 +9,30 @@
 	</style>
 	<script type="text/javascript" src="pushapi.js"></script>
 </head>
-<body id="body" class='content'> 
-<h1>Push API Test</h1> 
+<body id="body"> 
+<h2>Push API Test</h2> 
 Push source: <input id='source' type='text' value='sms:'/><br/>
 (example: "sms:+12125551212")<br/>
 <span id='state'>PushSource is CLOSED</span><button id='control' onClick='openPushSource(source.value);'>Open it</button>
+<iframe id='extref'></iframe>
 <div id='log'></div>
 	<script type="text/javascript">
 	var pushsource;
 	var log = document.getElementById("log"); 
 	var control = document.getElementById("control");
 	var state = document.getElementById("state"); 
+	var extref = document.getElementById("extref"); 
 	function openPushSource(source) {
 		try {
 			pushsource = new PushSource(source);
-			var str = log.innerHTML;
-			str +="PushSource opened: "+pushsource.url+"<br/>";
-			log.innerHTML = str;
+			log.innerHTML = "PushSource opened: "+pushsource.url+"<br/>";
 			pushsource.onmessage = function(event) {
-				var str = log.innerHTML;
-				str += "Message from PushSource ("+pushsource.url+"): "+event.data+"<br/>";
-				log.innerHTML = str;
+				if (event.data.substring(0,4) == 'http') {
+					extref.src = event.data;			
+				}
+				else {
+					log.innerHTML = "Message from PushSource ("+pushsource.url+"): "+event.data+"<br/>";
+				}
 			};
 			state.innerHTML = 'PushSource is OPEN';
 			control.innerHTML = 'Close it';
@@ -37,16 +40,12 @@ Push source: <input id='source' type='text' value='sms:'/><br/>
 		}
 		catch (e) {
 			alert(e.message);
-			var str = log.innerHTML;
-			str += "Exception: "+e.message+"<br/>";
-			log.innerHTML = str;			
+			log.innerHTML = "Exception: "+e.message+"<br/>";
 		}
 	}
 	function closePushSource() {
 		pushsource.close();
-		var str = log.innerHTML;
-		str += "PushSource closed<br/>";
-		log.innerHTML = str;
+		log.innerHTML = "PushSource closed<br/>";
 		state.innerHTML = 'PushSource is CLOSED';
 		control.setAttribute('onClick','openPushSource(source.value);');
 		control.innerHTML = 'Open it';
